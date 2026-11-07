@@ -1,1 +1,87 @@
-helle everyone nice to meet you!
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Shop - ទំព័រទិញទំនិញ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- ភ្ជាប់ឯកសារ CSS ខាងក្រៅ -->
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">🛍️ Online Shop</div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="ស្វែងរកទំនិញ..." onkeyup="searchProducts()">
+            <button>ស្វែងរក</button>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="បើកម៉ឺនុយ" aria-expanded="false" onclick="toggleMenu()">
+            ☰
+        </button>
+        <button class="cart-btn" onclick="openCartModal()">
+            🛒 កាបូបទំនិញ (<span id="cartCount">0</span>)
+        </button>
+    </header>
+
+    <nav class="main-menu" id="mainMenu" aria-label="ម៉ឺនុយទំព័រ">
+        <a href="#" class="menu-link active">ទំព័រដើម</a>
+        <a href="#productGrid" class="menu-link">ផលិតផល</a>
+        <a href="#" class="menu-link" onclick="openCartModal(); return false;">កាបូបទំនិញ</a>
+        <a href="Admin.html" class="menu-link">គ្រប់គ្រង</a>
+    </nav>
+
+    <nav class="brand-menu" aria-label="ម៉ឺនុយម៉ាកផលិតផល">
+        <button class="brand-btn active" type="button" onclick="filterByBrand('all', this)">ទាំងអស់</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('Lucaci', this)">Lucaci</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('Morea', this)">Morea</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('MMo', this)">MMo</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('MN', this)">MN</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('Miss', this)">Miss</button>
+        <button class="brand-btn" type="button" onclick="filterByBrand('ទឹកអប់', this)">ទឹកអប់</button>
+    </nav>
+
+    <div class="container">
+        <h2 class="section-title">ផលិតផលទាំងអស់</h2>
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- Modal មើលរូបភាពលម្អិត -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeProductModal()">&times;</span>
+            <div id="modalProductDetails" style="text-align: center;"></div>
+        </div>
+    </div>
+
+    <!-- Modal កាបូបទំនិញ និងបញ្ជារទិញ -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCartModal()">&times;</span>
+            <h2>ទំនិញដែលបានជ្រើសរើស</h2>
+            <div id="cartItemsList" style="margin: 15px 0;"></div>
+            <h3>សរុបទឹកប្រាក់: $<span id="cartTotal">0.00</span></h3>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3>ព័ត៌មានអតិថិជនសម្រាប់បញ្ជាទិញ</h3>
+            <div class="form-group" style="margin-top: 10px;">
+                <label>ឈ្មោះអតិថិជន</label>
+                <input type="text" id="custName" placeholder="បញ្ចូលឈ្មោះរបស់អ្នក">
+            </div>
+            <div class="form-group">
+                <label>លេខទូរស័ព្ទ</label>
+                <input type="text" id="custPhone" placeholder="បញ្ចូលលេខទូរស័ព្ទ">
+            </div>
+            <div class="form-group">
+                <label>ទីតាំងទទួលទំនិញ</label>
+                <textarea id="custAddress" rows="3" placeholder="បញ្ចូលអាសយដ្ឋាន ឬទីតាំងរបស់អ្នក"></textarea>
+            </div>
+            <button class="btn-checkout" onclick="checkoutToTelegram()">បញ្ជាក់ការកម្មង់ផ្ញើចូល Telegram</button>
+        </div>
+    </div>
+
+    <!-- ភ្ជាប់ឯកសារ JavaScript ខាងក្រៅ -->
+    <script src="Script.js"></script>
+</body>
+</html>
