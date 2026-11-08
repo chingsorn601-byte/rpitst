@@ -1,4 +1,21 @@
 let products;
+
+function normalizeProductImage(image) {
+    if (!image || image.startsWith('data:') || /^https?:\/\//i.test(image)) {
+        return image || '../image/onlineshop.jpg';
+    }
+    if (image.startsWith('../image/')) {
+        return image;
+    }
+    if (image.startsWith('../')) {
+        return '../image/' + image.substring(3);
+    }
+    if (image.startsWith('image/')) {
+        return '../' + image;
+    }
+    return '../image/' + image;
+}
+
 const defaultProducts = [
     { id: 5, brand: "Lucaci", name: "ម៉ាសបិទមុខ Lucaci Set", price: 5.00, stock: 10, image: "../Lucacisetmask.jpg", desc: "ម៉ាសបិទមុខម៉ាក Lucaci មានគុណភាពល្អ និងងាយស្រួលប្រើ។" },
     { id: 8, brand: "Lucaci", name: "ម៉ាស Lucaci សមុទ្រ", price: 6.00, stock: 15, image: "../lucaciformmasksomlei.jpg", desc: "ម៉ាស Lucaci សម្រាប់ថែរក្សាស្បែកមុខ និងផ្តល់ភាពស្រស់ថ្លា។" },
@@ -43,6 +60,11 @@ function loadProducts() {
     } else {
         products = [...defaultProducts];
     }
+    products = products.map(product => ({
+        ...product,
+        image: normalizeProductImage(product.image)
+    }));
+    localStorage.setItem('shop_products', JSON.stringify(products));
 }
 
 loadProducts();
@@ -59,7 +81,7 @@ function displayProducts(items) {
         const isOutOfStock = stockQty <= 0;
         grid.innerHTML += `
             <div class="product-card" style="opacity: ${isOutOfStock ? '0.6' : '1'};">
-                <img src="${product.image}" alt="${product.name}" onclick="viewProductDetail(${product.id})" style="cursor: pointer;">
+                <img src="${product.image}" alt="${product.name}" onerror="this.onerror=null;this.src='../image/onlineshop.jpg'" onclick="viewProductDetail(${product.id})" style="cursor: pointer;">
                 <div class="product-info">
                     <div class="product-title">${product.name}</div>
                     <div class="product-price">$${product.price.toFixed(2)}</div>
@@ -106,7 +128,7 @@ function viewProductDetail(id) {
     const detailsDiv = document.getElementById('modalProductDetails');
     const stockQty = product.stock !== undefined ? product.stock : 0;
     detailsDiv.innerHTML = `
-        <img src="${product.image}" style="width:100%; max-height:220px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+        <img src="${product.image}" onerror="this.onerror=null;this.src='../image/onlineshop.jpg'" style="width:100%; max-height:220px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
         <h2>${product.name}</h2>
         <p style="color: #e74c3c; font-size: 18px; font-weight: bold; margin: 10px 0;">$${product.price.toFixed(2)}</p>
         <p style="color: ${stockQty <= 0 ? '#e74c3c' : '#27ae60'}; font-size: 14px; margin-bottom: 10px;">
