@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - គ្រប់គ្រងផលិតផល និងការបញ្ជាទិញ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kantumruy Pro', sans-serif;
+        }
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+        }
+        header {
+            background-color: #1abc9c;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        /* ផ្ទាំងស្ថិតិសង្ខេប */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 5px solid #1abc9c;
+        }
+        .stat-card:nth-child(2) { border-left-color: #27ae60; }
+        .stat-card:nth-child(3) { border-left-color: #f39c12; }
+        .stat-info h4 {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        .stat-info span {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .stat-icon { font-size: 35px; }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn:hover { background: #219653; }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-warning:hover { background: #d35400; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        img.thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        #imagePreview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>🛠️ Admin Dashboard - ប្រព័ន្ធគ្រប់គ្រងហាង</h2>
+        <a href="index.html" style="color: white; text-decoration: none; background: #27ae60; padding: 8px 15px; border-radius: 4px; font-weight: 500;">⬅️ ទៅកាន់ទំព័រលក់ទំនិញ</a>
+    </header>
+
+    <div class="container">
+        <!-- ផ្ទាំងបង្ហាញស្ថិតិសង្ខេប -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h4>ការបញ្ជាទិញសរុប</h4>
+                    <span id="totalOrdersCount">0</span>
+                </div>
+                <div class="stat-icon">📦</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h4>ទឹកប្រាក់លក់បានសរុប</h4>
+                    <span id="totalRevenueAmount">$0.00</span>
+                </div>
+                <div class="stat-icon">💰</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h4>ផលិតផលសរុបក្នុងហាង</h4>
+                    <span id="totalProductsCount">0</span>
+                </div>
+                <div class="stat-icon">🛍️</div>
+            </div>
+        </div>
+
+        <!-- ផ្ទាំងប្រវត្តិការបញ្ជាទិញ -->
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">📦 ប្រវត្តិការបញ្ជាទិញរបស់អតិថិជន</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>កាលបរិច្ឆេទ</th>
+                        <th>ឈ្មោះអតិថិជន</th>
+                        <th>លេខទូរស័ព្ទ</th>
+                        <th>ទីតាំង</th>
+                        <th>បញ្ជីទំនិញ និងសរុប</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrdersTable">
+                    <!-- ទិន្នន័យបញ្ជាទិញនឹងបង្ហាញទីនេះ -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ទម្រង់សម្រាប់ បន្ថែម ឬ កែសម្រួលទំនិញ -->
+        <div class="card">
+            <h3 id="formTitle" style="margin-bottom: 15px;">➕ បន្ថែមទំនិញថ្មី</h3>
+            <input type="hidden" id="editIndex">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="prodName">ឈ្មោះទំនិញ</label>
+                    <input type="text" id="prodName" placeholder="ឈ្មោះទំនិញ">
+                </div>
+                <div class="form-group">
+                    <label for="prodPrice">តម្លៃ ($)</label>
+                    <input type="number" step="0.01" id="prodPrice" placeholder="តម្លៃជាដុល្លារ">
+                </div>
+                <!-- កន្លែងបញ្ចូលចំនួនស្តុក (Stock Input) -->
+                <div class="form-group">
+                    <label for="prodStock">ចំនួនស្តុក (Stock)</label>
+                    <input type="number" id="prodStock" placeholder="ចំនួនទំនិញក្នុងស្តុក">
+                </div>
+                <div class="form-group">
+                    <label for="prodImageFile">ជ្រើសរើសរូបភាពពីកុំព្យូទ័រ</label>
+                    <input type="file" id="prodImageFile" accept="image/*" onchange="previewImage(event)">
+                    <img id="imagePreview" src="" alt="Image Preview">
+                </div>
+                <div class="form-group">
+                    <label for="prodBrand">ម៉ាកផលិតផល</label>
+                    <select id="prodBrand">
+                        <option value="">គ្មានម៉ាក</option>
+                        <option value="Lucaci">Lucaci</option>
+                        <option value="Morea">Morea</option>
+                        <option value="MMo">MMo</option>
+                        <option value="MN">MN</option>
+                        <option value="Miss">Miss</option>
+                        <option value="ទឹកអប់">ទឹកអប់</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="prodDesc">បរិយាយពីទំនិញ</label>
+                <textarea id="prodDesc" rows="2" placeholder="ព័ត៌មានលម្អិតពីទំនិញ..."></textarea>
+            </div>
+            <button class="btn" id="saveBtn" onclick="saveProduct()">រក្សាទុកទំនិញ</button>
+            <button class="btn btn-warning" id="cancelBtn" onclick="resetForm()" style="display:none;">បោះបង់</button>
+        </div>
+
+        <!-- តារាងបង្ហាញបញ្ជីទំនិញទាំងអស់ -->
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">📋 បញ្ជីផលិតផលក្នុងហាង</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>រូបភាព</th>
+                        <th>ឈ្មោះទំនិញ</th>
+                        <th>តម្លៃ</th>
+                        <th>ស្តុក</th>
+                        <th>ម៉ាក</th>
+                        <th>បរិយាយ</th>
+                        <th>សកម្មភាព</th>
+                    </tr>
+                </thead>
+                <tbody id="adminProductTable">
+                    <!-- ទិន្នន័យទំនិញនឹងបង្ហាញទីនេះ -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ពិនិត្យសិទ្ធិ Admin
+        function checkAdminAccess() {
+            let isAdmin = sessionStorage.getItem('is_admin');
+            if (isAdmin !== 'true') {
+                let password = prompt("សូមបញ្ចូលលេខកូដសម្ងាត់ Admin ដើម្បីចូលប្រើប្រាស់៖");
+                if (password === "Pheiching@168") {
+                    sessionStorage.setItem('is_admin', 'true');
+                } else {
+                    alert("លេខកូដមិនត្រឹមត្រូវទេ! អ្នកមិនមានសិទ្ធិចូលទីនេះទេ។");
+                    window.location.href = "index.html";
+                }
+            }
+        }
+
+        checkAdminAccess();
+
+        let currentImageBase64 = "";
+
+        function normalizeProductImage(image) {
+            if (!image || image.startsWith('data:') || /^https?:\/\//i.test(image)) {
+                return image || '../image/onlineshop.jpg';
+            }
+            if (image.startsWith('../image/')) {
+                return image;
+            }
+            if (image.startsWith('../')) {
+                return '../image/' + image.substring(3);
+            }
+            if (image.startsWith('image/')) {
+                return '../' + image;
+            }
+            return '../image/' + image;
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageBase64 = e.target.result;
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = currentImageBase64;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        const defaultProducts = [
+            { id: 5, brand: "Lucaci", name: "ម៉ាសបិទមុខ Lucaci Set", price: 5.00, stock: 10, image: "../Lucacisetmask.jpg", desc: "ម៉ាសបិទមុខម៉ាក Lucaci មានគុណភាពល្អ និងងាយស្រួលប្រើ។" },
+            { id: 8, brand: "Lucaci", name: "ម៉ាស Lucaci សមុទ្រ", price: 6.00, stock: 15, image: "../lucaciformmasksomlei.jpg", desc: "ម៉ាស Lucaci សម្រាប់ថែរក្សាស្បែកមុខ និងផ្តល់ភាពស្រស់ថ្លា។" },
+            { id: 9, brand: "Morea", name: "Morea Cleansing Foam", price: 12.00, stock: 12, image: "../CleansingMorea.jpg", desc: "ផលិតផលសម្អាតមុខម៉ាក Morea សម្រាប់ប្រើប្រចាំថ្ងៃ។" },
+            { id: 10, brand: "Morea", name: "Morea Foam", price: 10.00, stock: 20, image: "../FourmMorea.jpg", desc: "Foam Morea សម្រាប់លាងមុខ បន្សុតភាពស្អាត។" },
+            { id: 11, brand: "Morea", name: "Morea Serum", price: 18.00, stock: 8, image: "../SerurmMorea.jpg", desc: "សេរ៉ូម Morea ជួយថែរក្សាស្បែកមុខ និងបន្សុតស្នាម។" },
+            { id: 12, brand: "Morea", name: "Morea Night Cream", price: 16.00, stock: 10, image: "../NigthcreamMorea.jpg", desc: "ក្រែម Night Cream Morea សម្រាប់ថែរក្សាពេលយប់។" },
+            { id: 13, brand: "Morea", name: "Morea Night Cream", price: 16.00, stock: 10, image: "../NigthcreamMorea1.jpg", desc: "ក្រែម Night Cream Morea បន្ថែមសំណើម និងភាពរីករាយដល់ស្បែក។" },
+            { id: 14, brand: "Morea", name: "Morea Face Mask", price: 7.00, stock: 25, image: "../maskMorea.jpg", desc: "ម៉ាសមុខ Morea សម្រាប់ថែរក្សាស្បែក និងបន្សុតសំណើម។" },
+            { id: 15, brand: "Morea", name: "Morea BB Cream", price: 14.00, stock: 14, image: "../BBMorea.jpg", desc: "BB Cream Morea ធ្វើឲ្យមុខមានភាពរលោង និងថ្លាអើយ។" },
+            { id: 16, brand: "Morea", name: "Morea Sunscreen", price: 20.00, stock: 12, image: "../SuncreanMorea.jpg", desc: "ក្រែមការពារផ្នែកព្រះអាទិត្យ Morea ល្បិចការពារUV។" },
+            { id: 17, brand: "MMo", name: "ម៉ាក MMo Set", price: 25.00, stock: 6, image: "../SetMMo.jpg", desc: "សំណុំព្យាបាលស្បែកម៉ាក MMo។" },
+            { id: 18, brand: "MN", name: "សំណុំ MN Set 1", price: 25.00, stock: 10, image: "../SetMN.jpg", desc: "សំណុំផលិតផលម៉ាក MN ដែលមានរូបភាពពិសេស។" },
+            { id: 19, brand: "MN", name: "សំណុំ MN Set 2", price: 28.00, stock: 9, image: "../SetMN1.jpg", desc: "សំណុំព័ត៌មានម៉ាក MN ពេញលេញសម្រាប់ថែរក្សាស្បែក។" },
+            { id: 26, brand: "Miss", name: "Miss Body Scrub", price: 12.00, stock: 15, image: "../ScrabMiss.jpg", desc: "ស្ក្រាប់ Miss ជួយបូមស្នាម និងធ្វើឲ្យស្បែករលោង។" },
+            { id: 27, brand: "Miss", name: "Miss Shampoo", price: 10.00, stock: 20, image: "../ShampooMiss.jpg", desc: "សាប៊ូបោកសក់ Miss សម្រាប់សក់ស្អាត និងមានសំណើម។" },
+            { id: 28, brand: "Miss", name: "Miss Night Cream", price: 15.00, stock: 11, image: "../NigthMiss.jpg", desc: "ក្រែមពេលយប់ Miss ជួយថែរក្សាស្បែកមុខ។" },
+            { id: 29, brand: "Miss", name: "Miss Cushion", price: 18.00, stock: 13, image: "../CushionMiss.jpg", desc: "Cushion Miss សម្រាប់បិទជាក់ស្បែក និងមុខមានភាពរលោង។" },
+            { id: 30, brand: "Miss", name: "Miss BB Cream", price: 14.00, stock: 15, image: "../BBMiss.jpg", desc: "BB Cream Miss សម្រាប់មុខមានពណ៌សុទ្ធ និងទាន់សម័យ។" },
+            { id: 31, brand: "Miss", name: "Miss Makeup Set", price: 20.00, stock: 7, image: "../LeMiss.jpg", desc: "សំណុំមុខ Miss សម្រាប់ការតុបតែងប្រចាំថ្ងៃ។" },
+            { id: 32, brand: "Miss", name: "Miss Beauty Set", price: 22.00, stock: 8, image: "../LekleakMIss.jpg", desc: "សំណុំធ្វើសម្រស់ Miss មានគុណភាពល្អ។" },
+            { id: 34, brand: "ទឹកអប់", name: "Miss Dior", price: 35.00, stock: 5, image: "../MissDior.jpg", desc: "ទឹកអប់ Miss Dior សម្រាប់ប្រើប្រចាំថ្ងៃ និងពិសេស។" },
+            { id: 35, brand: "ទឹកអប់", name: "Dior Perfume", price: 40.00, stock: 4, image: "../Dior1.jpg", desc: "ទឹកអប់ Dior មានក្លិនស្អាត និងប្រើបានយូរ។" },
+            { id: 36, brand: "ទឹកអប់", name: "Blue Perfume", price: 25.00, stock: 10, image: "../Bluee.jpg", desc: "ទឹកអប់ Blue មានក្លិនស្រស់ៗ និងទាក់ទាញ។" },
+            { id: 37, brand: "ទឹកអប់", name: "Saveac Perfume", price: 30.00, stock: 9, image: "../Saveac.jpg", desc: "ទឹកអប់ Saveac សម្រាប់ប្រើប្រចាំថ្ងៃ។" }
+        ];
+
+        function getProducts() {
+            let products = localStorage.getItem('shop_products');
+            if (!products) {
+                const normalizedDefaults = defaultProducts.map(product => ({
+                    ...product,
+                    image: normalizeProductImage(product.image)
+                }));
+                localStorage.setItem('shop_products', JSON.stringify(normalizedDefaults));
+                return normalizedDefaults;
+            }
+            try {
+                const storedProducts = JSON.parse(products);
+                const mergedProducts = [...storedProducts];
+                defaultProducts.forEach(defaultProduct => {
+                    if (!mergedProducts.some(product => product.id === defaultProduct.id)) {
+                        mergedProducts.push(defaultProduct);
+                    }
+                });
+                const normalizedProducts = mergedProducts.map(product => ({
+                    ...product,
+                    image: normalizeProductImage(product.image)
+                }));
+                saveProductsToStorage(normalizedProducts);
+                return normalizedProducts;
+            } catch (error) {
+                const normalizedDefaults = defaultProducts.map(product => ({
+                    ...product,
+                    image: normalizeProductImage(product.image)
+                }));
+                saveProductsToStorage(normalizedDefaults);
+                return normalizedDefaults;
+            }
+        }
+
+        function saveProductsToStorage(products) {
+            localStorage.setItem('shop_products', JSON.stringify(products));
+        }
+
+        function updateDashboardStats() {
+            let products = getProducts();
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+
+            let totalOrders = orders.length;
+            let totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+            let totalProducts = products.length;
+
+            document.getElementById('totalOrdersCount').innerText = totalOrders;
+            document.getElementById('totalRevenueAmount').innerText = `$${totalRevenue.toFixed(2)}`;
+            document.getElementById('totalProductsCount').innerText = totalProducts;
+        }
+
+        function renderAdminTable() {
+            let products = getProducts();
+            let tbody = document.getElementById('adminProductTable');
+            tbody.innerHTML = "";
+
+            products.forEach((p, index) => {
+                const stockQty = p.stock !== undefined ? p.stock : 0;
+                tbody.innerHTML += `
+                    <tr>
+                        <td><img src="${p.image}" class="thumb" alt="${p.name}" onerror="this.onerror=null;this.src='../image/onlineshop.jpg'"></td>
+                        <td><strong>${p.name}</strong></td>
+                        <td>$${p.price.toFixed(2)}</td>
+                        <td><span style="color: ${stockQty <= 0 ? 'red' : 'green'}; font-weight: bold;">${stockQty} ឯកតា</span></td>
+                        <td>${p.brand || '-'}</td>
+                        <td>${p.desc}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editProduct(${index})" style="padding: 5px 10px; font-size: 13px;">កែសម្រួល</button>
+                            <button class="btn btn-danger" onclick="deleteProduct(${index})" style="padding: 5px 10px; font-size: 13px;">លុប</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            updateDashboardStats();
+        }
+
+        function renderOrdersTable() {
+            let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+            let tbody = document.getElementById('adminOrdersTable');
+            tbody.innerHTML = "";
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#777;">មិនទាន់មានការបញ្ជាទិញនៅឡើយទេ</td></tr>`;
+                updateDashboardStats();
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                let itemsListHtml = order.cart.map(item => `• ${item.name} ($${item.price.toFixed(2)})`).join('<br>');
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${order.date}</td>
+                        <td><strong>${order.name}</strong></td>
+                        <td>${order.phone}</td>
+                        <td>${order.address}</td>
+                        <td>
+                            ${itemsListHtml}
+                            <hr style="margin: 5px 0;">
+                            <strong>សរុប: $${order.total.toFixed(2)}</strong>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteOrder(${index})" style="padding: 5px 10px; font-size: 13px;">លុប</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            updateDashboardStats();
+        }
+
+        function deleteOrder(index) {
+            if (confirm("តើអ្នកពិតជាចង់លុបប្រវត្តិการបញ្ជាទិញនេះមែនទេ?")) {
+                let orders = JSON.parse(localStorage.getItem('shop_orders')) || [];
+                orders.splice(index, 1);
+                localStorage.setItem('shop_orders', JSON.stringify(orders));
+                renderOrdersTable();
+            }
+        }
+
+        function saveProduct() {
+            let name = document.getElementById('prodName').value.trim();
+            let price = parseFloat(document.getElementById('prodPrice').value);
+            let stock = parseInt(document.getElementById('prodStock').value) || 0;
+            let desc = document.getElementById('prodDesc').value.trim();
+            let brand = document.getElementById('prodBrand').value;
+            let editIndex = document.getElementById('editIndex').value;
+
+            if (!name || isNaN(price)) {
+                alert("សូមបំពេញឈ្មោះ និងតម្លៃទំនិញឱ្យបានត្រឹមត្រូវ!");
+                return;
+            }
+
+            let products = getProducts();
+
+            if (editIndex === "") {
+                if (!currentImageBase64) {
+                    alert("សូមជ្រើសរើសរូបភាពផលិតផលពីកុំព្យូទ័ររបស់អ្នក!");
+                    return;
+                }
+                let newProd = {
+                    id: Date.now(),
+                    name: name,
+                    price: price,
+                    stock: stock,
+                    image: currentImageBase64,
+                    brand: brand,
+                    desc: desc
+                };
+                products.push(newProd);
+            } else {
+                products[editIndex].name = name;
+                products[editIndex].price = price;
+                products[editIndex].stock = stock;
+                if (currentImageBase64) {
+                    products[editIndex].image = currentImageBase64;
+                }
+                products[editIndex].brand = brand;
+                products[editIndex].desc = desc;
+            }
+
+            saveProductsToStorage(products);
+            resetForm();
+            renderAdminTable();
+            alert("រក្សាទុកបានដោយជោគជ័យ!");
+        }
+
+        function editProduct(index) {
+            let products = getProducts();
+            let p = products[index];
+
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodStock').value = p.stock !== undefined ? p.stock : 0;
+            document.getElementById('prodBrand').value = p.brand || "";
+            document.getElementById('prodDesc').value = p.desc;
+            document.getElementById('editIndex').value = index;
+
+            currentImageBase64 = "";
+            const preview = document.getElementById('imagePreview');
+            preview.src = p.image;
+            preview.style.display = 'block';
+
+            document.getElementById('formTitle').innerText = "✏️ កែសម្រួលទំនិញ";
+            document.getElementById('saveBtn').innerText = "ធ្វើបច្ចុប្បន្នភាព";
+            document.getElementById('cancelBtn').style.display = "inline-block";
+        }
+
+        function deleteProduct(index) {
+            if (confirm("តើអ្នកពិតជាចង់លុបទំនិញនេះមែនទេ?")) {
+                let products = getProducts();
+                products.splice(index, 1);
+                saveProductsToStorage(products);
+                renderAdminTable();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('prodName').value = "";
+            document.getElementById('prodPrice').value = "";
+            document.getElementById('prodStock').value = "";
+            document.getElementById('prodImageFile').value = "";
+            document.getElementById('prodBrand').value = "";
+            document.getElementById('prodDesc').value = "";
+            document.getElementById('editIndex').value = "";
+            
+            currentImageBase64 = "";
+            const preview = document.getElementById('imagePreview');
+            preview.src = "";
+            preview.style.display = 'none';
+
+            document.getElementById('formTitle').innerText = "➕ បន្ថែមទំនិញថ្មី";
+            document.getElementById('saveBtn').innerText = "រក្សាទុកទំនិញ";
+            document.getElementById('cancelBtn').style.display = "none";
+        }
+
+        renderAdminTable();
+        renderOrdersTable();
+    </script>
+</body>
+</html>
